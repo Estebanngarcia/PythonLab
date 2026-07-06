@@ -58,40 +58,62 @@ def validar_patente(patente_ingresada):
 
 
 def registrar_ingreso():
-    """Módulo para controlar y procesar el ingreso de un vehículo."""
-    # Usamos 'global' para poder modificar las variables que creamos arriba del todo
+    """Módulo para controlar y procesar el ingreso de un vehículo con su hora."""
     global lugares_ocupados, total_vehiculos_atendidos, vehiculos_activos
 
     print("\n--- REGISTRO DE INGRESO ---")
     
-    # CONTROL 1: ¿Hay espacio disponible?
+    # CONTROL 1: Espacio
     if lugares_ocupados >= CAPACIDAD_MAXIMA:
-        print("[ERROR] Estacionamiento COMPLETAMENTE LLENO. No se permiten más ingresos.")
-        return  # Corta la función acá mismo y vuelve al menú
+        print("[ERROR] Estacionamiento COMPLETAMENTE LLENO.")
+        return
 
-    # ENTRADA DE DATOS
-    entrada = input("Ingrese la patente del vehículo: ")
-    patente = validar_patente(entrada)
+    # ENTRADA Y VALIDACIÓN DE PATENTE
+    entrada_patente = input("Ingrese la patente del vehículo: ")
+    patente = validar_patente(entrada_patente)
 
-    # CONTROL 2: ¿La patente es válida?
     if patente is None:
         print("[ERROR] Formato de patente inválido. Debe tener entre 6 y 9 caracteres.")
         return
 
-    # CONTROL 3: ¿El auto ya está adentro?
+    # CONTROL 2: Duplicados
     if patente in vehiculos_activos:
-        print(f"[ERROR] El vehículo {patente} YA SE ENCUENTRA dentro del estacionamiento.")
+        print(f"[ERROR] El vehículo {patente} YA SE ENCUENTRA dentro.")
+        return
+
+    # ENTRADA Y VALIDACIÓN DE HORA (¡Lo nuevo!)
+    entrada_hora = input("Ingrese la hora de ingreso (0-23): ")
+    hora_ingreso = validar_hora(entrada_hora)
+
+    if hora_ingreso is None:
+        print("[ERROR] Hora inválida. Debe ser un número entero entre 0 y 23.")
         return
 
     # PROCESAMIENTO EXITOSO
-    # Guardamos la patente en el diccionario. Ponemos "8" simulando que entró a las 8 hs.
-    vehiculos_activos[patente] = 8  
+    # Ahora guardamos la patente con su HORA REAL de entrada en el diccionario
+    vehiculos_activos[patente] = hora_ingreso  
     
-    # Actualizamos los contadores
-    lugares_ocupados += 1           # Suma 1 a los que están adentro ahora
-    total_vehiculos_atendidos += 1  # Suma 1 al historial del día
+    lugares_ocupados += 1           
+    total_vehiculos_atendidos += 1  
     
-    print(f"[ÉXITO] Vehículo {patente} ingresado correctamente.")
+    print(f"[ÉXITO] Vehículo {patente} ingresado correctamente a las {hora_ingreso} hs.")
+    
+    
+def validar_hora(hora_texto):
+    """Valida que la hora ingresada sea un número entero entre 0 y 23.
+    Devuelve el número entero si es válido, o None si hay error."""
+    
+    # Manejo básico de errores por si ingresan letras en vez de números
+    if not hora_texto.isdigit():
+        return None
+        
+    hora_entera = int(hora_texto)
+    
+    # Estructura condicional de rango (0 a 23 horas)
+    if hora_entera < 0 or hora_entera > 23:
+        return None
+        
+    return hora_entera
 
 # ==========================================
 # PROGRAMA PRINCIPAL (CONTROL DE FLUJO)
