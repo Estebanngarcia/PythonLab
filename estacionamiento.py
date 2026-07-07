@@ -210,6 +210,42 @@ def mostrar_vehiculos_estacionados():
         
     print("-" * 35)
 
+def calcular_tiempo_promedio():
+    """
+    Función pura que calcula el tiempo promedio de permanencia.
+    Retorna el promedio, o 0 si todavía no salieron vehículos.
+    """
+    # Calculamos cuántos vehículos ya egresaron (atendidos totales menos los que siguen adentro)
+    vehiculos_egresados = total_vehiculos_atendidos - lugares_ocupados
+    
+    # VALIDACIÓN CRÍTICA: Controlamos que ya haya salido al menos un auto para evitar división por cero
+    if vehiculos_egresados == 0:
+        return 0.0
+        
+    # Aplicamos la fórmula del promedio
+    promedio = total_horas_permanencia / vehiculos_egresados
+    return promedio
+
+
+def mostrar_estadisticas():
+    """Módulo encargado de calcular y presentar el reporte analítico en pantalla."""
+    print("\n" + "*" * 40)
+    print("        ESTADÍSTICAS OPERATIVAS DEL DÍA        ")
+    print("*" * 40)
+    
+    # Cálculo del porcentaje de ocupación actual en tiempo real
+    porcentaje_ocupacion = (lugares_ocupados / CAPACIDAD_MAXIMA) * 100
+    
+    # Llamamos a nuestra función pura para obtener el promedio de tiempo
+    tiempo_promedio = calcular_tiempo_promedio()
+    
+    # Muestra de resultados utilizando acumuladores y contadores globales
+    print(f"-> Vehículos que ingresaron hoy : {total_vehiculos_atendidos}")
+    print(f"-> Ocupación actual de cocheras : {porcentaje_ocupacion:.1f}%")
+    print(f"-> Tiempo promedio de estadía   : {tiempo_promedio:.1f} hs.")
+    print("-" * 40)
+    print(f"-> RECAUDACIÓN TOTAL ACUMULADA  : ${recaudacion_total:.2f}")
+    print("*" * 40)
 # ==========================================
 # PROGRAMA PRINCIPAL (CONTROL DE FLUJO)
 # ==========================================
@@ -229,7 +265,7 @@ def main():
         elif opcion == "3":
             mostrar_vehiculos_estacionados()
         elif opcion == "4":
-            print("\n Calcular el tiempo promedio y estadísticas.")
+           mostrar_estadisticas()
         elif opcion == "5":
             print("\nGracias por utilizar el sistema. Cerrando gestión...")
             sistema_activo = False
