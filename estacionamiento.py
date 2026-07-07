@@ -192,6 +192,24 @@ def validar_hora(hora_texto):
         
     return hora_entera
 
+def mostrar_vehiculos_estacionados():
+    """Módulo que recorre el diccionario para listar los autos que están adentro."""
+    print("\n--- VEHÍCULOS DENTRO DEL PREDIO ---")
+    
+    # CONTROL: Si el diccionario está vacío, avisamos al usuario en vez de dejar la pantalla en blanco
+    if len(vehiculos_activos) == 0:
+        print("No hay vehículos estacionados en este momento.")
+        return
+
+    print(f"Total de autos estacionados: {lugares_ocupados}")
+    print("-" * 35)
+    
+    # ESTRUCTURA REPETITIVA: Recorremos las claves (patentes) y valores (horas) del diccionario
+    for patente, hora in vehiculos_activos.items():
+        print(f"• Patente: {patente}  |  Ingresó a las: {hora} hs.")
+        
+    print("-" * 35)
+
 # ==========================================
 # PROGRAMA PRINCIPAL (CONTROL DE FLUJO)
 # ==========================================
@@ -209,7 +227,7 @@ def main():
         elif opcion == "2":
             registrar_egreso()
         elif opcion == "3":
-            print("\n Listar las patentes que están adentro.")
+            mostrar_vehiculos_estacionados()
         elif opcion == "4":
             print("\n Calcular el tiempo promedio y estadísticas.")
         elif opcion == "5":
