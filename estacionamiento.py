@@ -99,21 +99,21 @@ def registrar_ingreso():
     print(f"[ÉXITO] Vehículo {patente} ingresado correctamente a las {hora_ingreso} hs.")
     
     
-    def validar_hora(hora_texto):
-        """Valida que la hora ingresada sea un número entero entre 0 y 23.
-        Devuelve el número entero si es válido, o None si hay error."""
+def validar_hora(hora_texto):
+    """Valida que la hora ingresada sea un número entero entre 0 y 23.
+    Devuelve el número entero si es válido, o None si hay error."""
+    
+    # Manejo básico de errores por si ingresan letras en vez de números
+    if not hora_texto.isdigit():
+        return None
         
-        # Manejo básico de errores por si ingresan letras en vez de números
-        if not hora_texto.isdigit():
-            return None
-            
-        hora_entera = int(hora_texto)
+    hora_entera = int(hora_texto)
+    
+    # Estructura condicional de rango (0 a 23 horas)
+    if hora_entera < 0 or hora_entera > 23:
+        return None
         
-        # Estructura condicional de rango (0 a 23 horas)
-        if hora_entera < 0 or hora_entera > 23:
-            return None
-            
-        return hora_entera
+    return hora_entera
 
 # ==========================================
 # PROGRAMA PRINCIPAL (CONTROL DE FLUJO)
