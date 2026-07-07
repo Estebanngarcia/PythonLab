@@ -97,6 +97,83 @@ def registrar_ingreso():
     total_vehiculos_atendidos += 1  
     
     print(f"[ÉXITO] Vehículo {patente} ingresado correctamente a las {hora_ingreso} hs.")
+
+def calcular_importe(hora_entrada, hora_salida):
+    """
+    Función pura que calcula las horas de permanencia y el importe a pagar.
+    Soporta el cambio de día (si sale al día siguiente).
+    Devuelve una tupla: (horas_totales, importe_final)
+    """
+    if hora_salida >= hora_entrada:
+        # Caso normal dentro del mismo día
+        horas = hora_salida - hora_entrada
+    else:
+        # Caso donde cruzó la medianoche (ej: entra a las 23 y sale a las 2)
+        horas = (24 - hora_entrada) + hora_salida
+        
+    # Regra de negocio: Si sale en la misma hora, se le cobra al menos 1 hora
+    if horas == 0:
+        horas = 1
+        
+    importe = horas * TARIFA_POR_HORA
+    return horas, importe
+
+
+def registrar_egreso():
+    """Módulo encargado de gestionar la salida del vehículo, el cobro y las estadísticas."""
+    global lugares_ocupados, recaudacion_total, total_horas_permanencia, vehiculos_activos
+
+    print("\n--- REGISTRO DE EGRESO (COBRO Y SALIDA) ---")
+    
+    # CONTROL 1: ¿Hay autos en el estacionamiento?
+    if lugares_ocupados == 0:
+        print("[ERROR] No hay ningún vehículo registrado en el sistema.")
+        return
+
+    # Entrada y validación de la patente a egresar
+    entrada_patente = input("Ingrese la patente del vehículo a egresar: ")
+    patente = validar_patente(entrada_patente)
+
+    if patente is None:
+        print("[ERROR] Formato de patente inválido.")
+        return
+
+    # CONTROL 2: ¿El vehículo realmente está adentro?
+    if patente not in vehiculos_activos:
+        print(f"[ERROR] El vehículo {patente} no está registrado en este estacionamiento.")
+        return
+
+    # Entrada y validación de la hora de salida
+    entrada_hora_salida = input("Ingrese la hora de salida (0-23): ")
+    hora_salida = validar_hora(entrada_hora_salida)
+
+    if hora_salida is None:
+        print("[ERROR] Hora inválida. Debe ser un número entero entre 0 y 23.")
+        return
+
+    # PROCESAMIENTO MATEMÁTICO (Llamada a la función pura)
+    # Recuperamos la hora de entrada que estaba guardada en el diccionario
+    hora_entrada = vehiculos_activos[patente]
+    
+    horas_estacionado, importe_a_pagar = calcular_importe(hora_entrada, hora_salida)
+
+    # ACTUALIZACIÓN DE VARIABLES GLOBALES (Acumuladores y Contadores)
+    del vehiculos_activos[patente]       # Borramos el auto del diccionario
+    lugares_ocupados -= 1                # Restamos 1 a los activos
+    recaudacion_total += importe_a_pagar # Acumulador de dinero
+    total_horas_permanencia += horas_estacionado # Acumulador de horas para el promedio posterior
+
+    # SALIDA DE DATOS: Ticket de cobro para el usuario
+    print("\n" + "-" * 35)
+    print(f"       TICKET DE SALIDA - {patente}       ")
+    print("-" * 35)
+    print(f"Hora de Entrada       : {hora_entrada} hs.")
+    print(f"Hora de Salida        : {hora_salida} hs.")
+    print(f"Tiempo de permanencia : {horas_estacionado} hs.")
+    print(f"Tarifa por hora       : ${TARIFA_POR_HORA}")
+    print(f"TOTAL A PAGAR         : ${importe_a_pagar:.2f}")
+    print("-" * 35)
+    print("[ÉXITO] Pago registrado y coche liberado.")
     
     
 def validar_hora(hora_texto):
@@ -130,7 +207,7 @@ def main():
         if opcion == "1":
             registrar_ingreso()
         elif opcion == "2":
-            print("\n Egreso y cálculo de importe.")
+            registrar_egreso()
         elif opcion == "3":
             print("\n Listar las patentes que están adentro.")
         elif opcion == "4":
