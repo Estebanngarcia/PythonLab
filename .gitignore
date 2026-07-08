@@ -1,0 +1,8 @@
+# Carpetas generadas por PyInstaller (Compilación)
+build/
+dist/
+*.spec
+
+# Archivos temporales de Python
+__pycache__/
+*.pyc
